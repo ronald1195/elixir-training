@@ -33,6 +33,9 @@ defmodule ElixirTraining.MixProject do
         session11: :test,
         session12: :test,
         "test.sessions": :test,
+        "test.pending": :test,
+        "session1.pending": :test,
+        "session2.pending": :test,
         "validate.session1": :test,
         "validate.session2": :test
       ]
@@ -60,7 +63,7 @@ defmodule ElixirTraining.MixProject do
       # Setup
       setup: ["deps.get", "compile"],
 
-      # Run tests for specific sessions
+      # Run IMPLEMENTED tests for specific sessions (pending tests excluded via test_helper.exs)
       # Usage: mix session1, mix session2, etc.
       session1: ["test test/session_01_basics/"],
       session2: ["test test/session_02_pattern_matching/"],
@@ -75,8 +78,14 @@ defmodule ElixirTraining.MixProject do
       session11: ["test test/session_11_grpc/"],
       session12: ["test test/session_12_realtime/"],
 
-      # Run all session tests (excludes default app tests)
+      # Run all session tests (excludes pending)
       "test.sessions": ["test test/session_*/"],
+
+      # Run PENDING tests (for working on exercises)
+      # Usage: mix session1.pending, mix session2.pending, etc.
+      "session1.pending": ["test test/session_01_basics/ --include pending"],
+      "session2.pending": ["test test/session_02_pattern_matching/ --include pending"],
+      "test.pending": ["test test/session_*/ --include pending"],
 
       # Validate a session (compile + test)
       "validate.session1": ["compile --warnings-as-errors", "session1"],

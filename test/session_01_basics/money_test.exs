@@ -1,5 +1,6 @@
 defmodule Session01.MoneyTest do
   use ExUnit.Case, async: true
+  @moduletag :pending
 
   alias Session01.Money
 

@@ -1,5 +1,6 @@
 defmodule Session02.PaymentProcessorTest do
   use ExUnit.Case, async: true
+  @moduletag :pending
 
   alias Session02.PaymentProcessor
 

@@ -1,5 +1,6 @@
 defmodule Session02.ResponseParserTest do
   use ExUnit.Case, async: true
+  @moduletag :pending
 
   alias Session02.ResponseParser
 

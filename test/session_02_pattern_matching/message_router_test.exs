@@ -1,5 +1,6 @@
 defmodule Session02.MessageRouterTest do
   use ExUnit.Case, async: true
+  @moduletag :pending
 
   alias Session02.MessageRouter
 
