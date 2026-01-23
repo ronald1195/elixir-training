@@ -1,6 +1,6 @@
 # Elixir Training
 
-[![CI](https://github.com/YOUR_USERNAME/elixir_training/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/elixir_training/actions/workflows/ci.yml)
+[![CI](https://github.com/ronald1195/elixir_training/actions/workflows/ci.yml/badge.svg)](https://github.com/ronald1195/elixir_training/actions/workflows/ci.yml)
 
 A hands-on training curriculum for engineers transitioning to Elixir from OOP languages.
 
