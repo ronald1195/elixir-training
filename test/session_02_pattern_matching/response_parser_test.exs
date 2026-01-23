@@ -7,7 +7,8 @@ defmodule Session02.ResponseParserTest do
     test "parses approved response" do
       response = {:ok, %{"approved" => true, "credit_limit" => 50000, "score" => 720}}
 
-      assert ResponseParser.parse_credit_check(response) == {:approved, %{limit: 50000, score: 720}}
+      assert ResponseParser.parse_credit_check(response) ==
+               {:approved, %{limit: 50000, score: 720}}
     end
 
     test "parses denied response" do

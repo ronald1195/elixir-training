@@ -34,7 +34,8 @@ defmodule Session02.PaymentProcessorTest do
         to_account: "ACC-456"
       }
 
-      assert PaymentProcessor.process(transaction) == {:ok, :transferred, "ACC-123", "ACC-456", 250}
+      assert PaymentProcessor.process(transaction) ==
+               {:ok, :transferred, "ACC-123", "ACC-456", 250}
     end
 
     test "processes refund transactions" do
@@ -75,7 +76,12 @@ defmodule Session02.PaymentProcessorTest do
     end
 
     test "validates a valid transfer transaction" do
-      transaction = %{type: :transfer, amount: 100, from_account: "ACC-123", to_account: "ACC-456"}
+      transaction = %{
+        type: :transfer,
+        amount: 100,
+        from_account: "ACC-123",
+        to_account: "ACC-456"
+      }
 
       assert PaymentProcessor.validate(transaction) == {:ok, transaction}
     end
@@ -105,7 +111,12 @@ defmodule Session02.PaymentProcessorTest do
     end
 
     test "rejects transfer to same account" do
-      transaction = %{type: :transfer, amount: 100, from_account: "ACC-123", to_account: "ACC-123"}
+      transaction = %{
+        type: :transfer,
+        amount: 100,
+        from_account: "ACC-123",
+        to_account: "ACC-123"
+      }
 
       assert PaymentProcessor.validate(transaction) == {:error, :same_account_transfer}
     end
@@ -131,19 +142,34 @@ defmodule Session02.PaymentProcessorTest do
     end
 
     test "refund increases balance" do
-      transaction = %{type: :refund, amount: 100, account_id: "ACC-123", original_transaction_id: "TXN-1"}
+      transaction = %{
+        type: :refund,
+        amount: 100,
+        account_id: "ACC-123",
+        original_transaction_id: "TXN-1"
+      }
 
       assert PaymentProcessor.balance_delta("ACC-123", transaction) == 100
     end
 
     test "transfer decreases sender balance" do
-      transaction = %{type: :transfer, amount: 250, from_account: "ACC-123", to_account: "ACC-456"}
+      transaction = %{
+        type: :transfer,
+        amount: 250,
+        from_account: "ACC-123",
+        to_account: "ACC-456"
+      }
 
       assert PaymentProcessor.balance_delta("ACC-123", transaction) == -250
     end
 
     test "transfer increases receiver balance" do
-      transaction = %{type: :transfer, amount: 250, from_account: "ACC-123", to_account: "ACC-456"}
+      transaction = %{
+        type: :transfer,
+        amount: 250,
+        from_account: "ACC-123",
+        to_account: "ACC-456"
+      }
 
       assert PaymentProcessor.balance_delta("ACC-456", transaction) == 250
     end
@@ -155,7 +181,12 @@ defmodule Session02.PaymentProcessorTest do
     end
 
     test "returns 0 for unrelated account in transfer" do
-      transaction = %{type: :transfer, amount: 250, from_account: "ACC-123", to_account: "ACC-456"}
+      transaction = %{
+        type: :transfer,
+        amount: 250,
+        from_account: "ACC-123",
+        to_account: "ACC-456"
+      }
 
       assert PaymentProcessor.balance_delta("ACC-999", transaction) == 0
     end
