@@ -6,6 +6,7 @@ defmodule ElixirTraining.MixProject do
       app: :elixir_training,
       version: "0.1.0",
       elixir: "~> 1.15",
+      elixirc_options: [warnings_as_errors: false],
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       aliases: aliases(),

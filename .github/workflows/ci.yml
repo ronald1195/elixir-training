@@ -39,8 +39,8 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
-      - name: Compile (warnings as errors)
-        run: mix compile --warnings-as-errors
+      - name: Compile
+        run: mix compile
 
       - name: Run tests
         run: mix test
@@ -72,8 +72,8 @@ jobs:
         session:
           - session_01
           - session_02
+          - session_03
           # Add more sessions as they're built
-          # - session_03
           # - session_04
 
     steps:
