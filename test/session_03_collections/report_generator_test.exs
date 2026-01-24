@@ -47,9 +47,10 @@ defmodule Session03Collections.ReportGeneratorTest do
       result = ReportGenerator.process_large_dataset(large_dataset, 100, 5)
 
       assert length(result) == 5
+
       assert Enum.all?(result, fn txn ->
-        txn.status == :approved and txn.amount > 100
-      end)
+               txn.status == :approved and txn.amount > 100
+             end)
     end
 
     test "works with minimum amount filter" do
