@@ -39,34 +39,51 @@
 - [x] Add additional exercises (API response parsing, Kafka routing)
 
 ### Session 3: Collections & Enum
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_03_collections/` module structure
-- [ ] Implement transaction batch processing exercise
-- [ ] Write tests for batch processor
-- [ ] Add Stream exercises for large dataset handling
+- [x] Write theory/slides content
+- [x] Create `lib/session_03_collections/` module structure
+- [x] Implement transaction batch processing exercise
+- [x] Write tests for batch processor
+- [x] Add Stream exercises for large dataset handling
+- [x] Create ReportGenerator module with Stream examples
+- [x] Write comprehensive tests for all exercises
+- [x] Create solution files
 
-### Session 4: Processes
+### Session 4: Umbrella Applications & Project Architecture
+- [ ] Write theory/slides content
+- [ ] Create `lib/session_04_umbrella/` module structure
+- [ ] Create mini umbrella app for exploration
+- [ ] Write exercises on bounded contexts
+- [ ] Add Juno structure navigation exercises
+
+### Session 5: Processes
 - [ ] Write theory/slides content
 - [ ] Create `lib/session_04_processes/` module structure
 - [ ] Implement rate limiter exercise
 - [ ] Write tests for rate limiter
 - [ ] Add message passing exercises
 
-### Session 5: GenServer
+### Session 6: GenServer
 - [ ] Write theory/slides content
 - [ ] Create `lib/session_05_genserver/` module structure
 - [ ] Implement `CreditLimitCache` exercise
 - [ ] Write tests for CreditLimitCache
 - [ ] Add connection pool exercise
 
-### Session 6: Supervision Trees
+### Session 7: Supervision Trees
 - [ ] Write theory/slides content
 - [ ] Create `lib/session_06_supervision/` module structure
 - [ ] Design payment processing supervision tree exercise
 - [ ] Write tests for supervision scenarios
 - [ ] Add failure injection exercises
 
-### Session 7: Ecto
+### Session 8: Oban - Background Job Processing
+- [ ] Write theory/slides content
+- [ ] Create `lib/session_08_oban/` module structure
+- [ ] Implement invoice processing worker exercise
+- [ ] Write tests for Oban workers
+- [ ] Add job scheduling and retry examples
+
+### Session 9: Ecto Basics
 - [ ] Write theory/slides content
 - [ ] Create `lib/session_07_ecto/` module structure
 - [ ] Set up test database configuration
@@ -74,35 +91,68 @@
 - [ ] Write changeset validation tests
 - [ ] Add Ecto.Multi exercise
 
-### Session 8: HTTP Clients
+### Session 10: Advanced Ecto - Multi-tenancy & Complex Patterns
+- [ ] Write theory/slides content
+- [ ] Create `lib/session_10_advanced_ecto/` module structure
+- [ ] Implement multi-tenant expense reporting exercise
+- [ ] Add Ecto.Multi examples
+- [ ] Write complex query exercises
+- [ ] Add performance optimization exercises
+
+### Session 11: HTTP Clients
 - [ ] Write theory/slides content
 - [ ] Create `lib/session_08_http/` module structure
 - [ ] Implement credit bureau client exercise
 - [ ] Add circuit breaker integration
 - [ ] Write tests with mocked HTTP responses
 
-### Session 9: Testing
+### Session 12: GraphQL with Absinthe
+- [ ] Write theory/slides content
+- [ ] Create `lib/session_12_graphql/` module structure
+- [ ] Implement GraphQL schema and resolvers
+- [ ] Add Dataloader exercises
+- [ ] Write authentication/authorization examples
+- [ ] Add subscription exercises
+
+### Session 13: Broadway & Kafka Integration
 - [ ] Write theory/slides content
 - [ ] Create `lib/session_09_testing/` module structure
 - [ ] Create exercises testing previous session code
 - [ ] Add Mox examples
 - [ ] Document testing patterns used in org
 
-### Session 10: Kafka
 - [ ] Write theory/slides content
-- [ ] Create `lib/session_10_kafka/` module structure
+- [ ] Create `lib/session_13_broadway/` module structure
 - [ ] Set up local Kafka for development
-- [ ] Implement transaction event consumer exercise
+- [ ] Implement Broadway pipeline exercise
+- [ ] Add transaction event consumer with Broadway
 - [ ] Write integration tests
+- [ ] Add idempotency patterns
 
-### Session 11: gRPC
+### Session 14: gRPC Services
 - [ ] Write theory/slides content
 - [ ] Create `lib/session_11_grpc/` module structure
 - [ ] Define protobuf schemas
 - [ ] Implement credit limit gRPC service
 - [ ] Write gRPC tests
 
-### Session 12: WebSockets
+### Session 15: Protocols, Behaviours & Polymorphism
+- [ ] Write theory/slides content
+- [ ] Create `lib/session_15_protocols/` module structure
+- [ ] Implement payment gateway behaviour exercise
+- [ ] Add protocol implementation examples
+- [ ] Write dependency injection patterns
+- [ ] Add examples from Juno (BankClient pattern)
+
+### Session 16: Testing in Elixir
+- [ ] Write theory/slides content
+- [ ] Create `lib/session_16_testing/` module structure
+- [ ] Create exercises testing previous session code
+- [ ] Add Mox examples with behaviours
+- [ ] Document ExMachina factory patterns
+- [ ] Add Broadway and GraphQL testing examples
+
+### Session 17: WebSockets & Real-Time Features
 - [ ] Write theory/slides content
 - [ ] Create `lib/session_12_realtime/` module structure
 - [ ] Implement WebSocket notification system
@@ -114,18 +164,23 @@
 ## Phase 3: Workshop Materials
 
 ### Presentation Decks
-- [ ] Session 1 slides
-- [ ] Session 2 slides
-- [ ] Session 3 slides
-- [ ] Session 4 slides
-- [ ] Session 5 slides
-- [ ] Session 6 slides
-- [ ] Session 7 slides
-- [ ] Session 8 slides
-- [ ] Session 9 slides
-- [ ] Session 10 slides
-- [ ] Session 11 slides
-- [ ] Session 12 slides
+- [ ] Session 1 slides (From OOP to Functional)
+- [ ] Session 2 slides (Pattern Matching)
+- [ ] Session 3 slides (Collections & Enum)
+- [ ] Session 4 slides (Umbrella Applications)
+- [ ] Session 5 slides (Processes)
+- [ ] Session 6 slides (GenServer)
+- [ ] Session 7 slides (Supervision Trees)
+- [ ] Session 8 slides (Oban)
+- [ ] Session 9 slides (Ecto Basics)
+- [ ] Session 10 slides (Advanced Ecto)
+- [ ] Session 11 slides (HTTP Clients)
+- [ ] Session 12 slides (GraphQL with Absinthe)
+- [ ] Session 13 slides (Broadway & Kafka)
+- [ ] Session 14 slides (gRPC Services)
+- [ ] Session 15 slides (Protocols & Behaviours)
+- [ ] Session 16 slides (Testing)
+- [ ] Session 17 slides (WebSockets)
 
 ### Facilitator Guides
 - [ ] Create facilitator notes template
@@ -153,12 +208,27 @@
 ## Future Expansion (Phase 5+)
 
 ### Advanced Topics Backlog
-- [ ] GenStage and Flow
+- [ ] GenStage and Flow (beyond Broadway)
 - [ ] DynamicSupervisor patterns
-- [ ] Custom Ecto adapters (OpenSearch)
-- [ ] Telemetry and observability
-- [ ] Apache Flink integration
-- [ ] Multi-tenancy patterns
+- [ ] Custom Ecto adapters (OpenSearch integration)
+- [ ] Telemetry and observability (Datadog, Spandex)
+- [ ] Apache Flink integration patterns
+- [ ] Distributed Elixir (libcluster strategies)
+- [ ] Hot code upgrades and releases
+
+### Juno-Specific Deep Dive Sessions
+- [ ] Session 18: Navigating the Juno Codebase
+  - Core.Supervisor walkthrough
+  - Finding the right context for changes
+  - Understanding the umbrella structure
+- [ ] Session 19: Juno's Domain Model
+  - Companies, Users, Cards, Transactions, Budgets
+  - Banking partner abstractions
+  - State machines with EctoStateMachine
+- [ ] Session 20: Working with Juno's Test Suite
+  - ExMachina factories deep dive
+  - Testing strategies for complex scenarios
+  - CI/CD and test performance
 
 ---
 

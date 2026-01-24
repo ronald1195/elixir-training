@@ -6,17 +6,17 @@ A hands-on training curriculum for engineers transitioning to Elixir from OOP la
 
 ## Overview
 
-This repository contains workshop materials, exercises, and solutions for learning Elixir in the context of building reliable financial services.
+This repository contains workshop materials, exercises, and solutions for learning Elixir in the context of building reliable financial services. The curriculum is targets engineers working at Bill but this material should be relevant for anyone, specially those new to Elixir.
 
-**Target Audience:** Engineers with Java, C#, Python or similar OOP backgrounds
+**Target Audience:** Engineers with Java, C#, Python or similar OOP backgrounds transitioning to Elixir
 
-**Format:** 12 workshop sessions with hands-on exercises
+**Format:** 17 workshop sessions with hands-on exercises (15 core + 2 advanced)
 
 ## Quick Start
 
 ```bash
 # Clone the repository
-git clone <repo-url>
+git clone https://github.com/ronald1195/elixir-training
 cd elixir_training
 
 # Setup (install deps + compile)
@@ -38,7 +38,7 @@ mix session2   # Session 2: Pattern Matching
 | `mix setup` | Install dependencies and compile |
 | `mix session1` | Run Session 1 tests |
 | `mix session2` | Run Session 2 tests |
-| `mix session3` ... `mix session12` | Run tests for sessions 3-12 |
+| `mix session3` ... `mix session17` | Run tests for sessions 3-17 |
 | `mix test.sessions` | Run all session tests |
 | `mix validate.session1` | Compile with warnings + run session 1 tests |
 | `mix lint` | Check formatting and compile warnings |
@@ -46,20 +46,42 @@ mix session2   # Session 2: Pattern Matching
 
 ## Curriculum
 
+### Foundations (Sessions 1-3)
 | Session | Topic | Focus | Status |
 |---------|-------|-------|--------|
-| 1 | From OOP to Functional | Immutability, basic syntax, pipe operator | Ready |
-| 2 | Pattern Matching | Destructuring, function clauses, guards | Ready |
-| 3 | Collections & Enum | Data transformation, streams, comprehensions | Planned |
-| 4 | Processes | Actor model, spawning, message passing | Planned |
-| 5 | GenServer | Stateful services, call vs cast | Planned |
-| 6 | Supervision Trees | Fault tolerance, restart strategies | Planned |
-| 7 | Ecto | Schemas, changesets, queries, transactions | Planned |
-| 8 | HTTP Clients | External integrations, retries, circuit breakers | Planned |
-| 9 | Testing | ExUnit, mocking with Mox, async tests | Planned |
-| 10 | Kafka Integration | Producers, consumers, idempotency | Planned |
-| 11 | gRPC Services | Protobuf, servers, clients, streaming | Planned |
-| 12 | WebSockets | Real-time features, webhooks | Planned |
+| 1 | From OOP to Functional | Immutability, basic syntax, pipe operator | ✅ Ready |
+| 2 | Pattern Matching | Destructuring, function clauses, guards, `with` pipeline | ✅ Ready |
+| 3 | Collections & Enum | Data transformation, streams, comprehensions | ✅ Ready |
+
+### Architecture & Concurrency (Sessions 4-8)
+| Session | Topic | Focus | Status |
+|---------|-------|-------|--------|
+| 4 | Umbrella Applications | Multi-app projects, bounded contexts, Juno structure | 📝 Planned |
+| 5 | Processes | Actor model, spawning, message passing | 📝 Planned |
+| 6 | GenServer | Stateful services, call vs cast, OTP patterns | 📝 Planned |
+| 7 | Supervision Trees | Fault tolerance, restart strategies, let it crash | 📝 Planned |
+| 8 | Oban | Background jobs, queues, retries, idempotency | 📝 Planned |
+
+### Data Layer (Sessions 9-10)
+| Session | Topic | Focus | Status |
+|---------|-------|-------|--------|
+| 9 | Ecto Basics | Schemas, changesets, queries, transactions | 📝 Planned |
+| 10 | Advanced Ecto | Multi-tenancy, Ecto.Multi, complex queries, performance | 📝 Planned |
+
+### Integration Patterns (Sessions 11-14)
+| Session | Topic | Focus | Status |
+|---------|-------|-------|--------|
+| 11 | HTTP Clients | External integrations, retries, circuit breakers | 📝 Planned |
+| 12 | GraphQL with Absinthe | Schemas, resolvers, Dataloader, subscriptions | 📝 Planned |
+| 13 | Broadway & Kafka | Event-driven architecture, message processing pipelines | 📝 Planned |
+| 14 | gRPC Services | Protobuf, servers, clients, streaming | 📝 Planned |
+
+### Advanced Patterns (Sessions 15-17)
+| Session | Topic | Focus | Status |
+|---------|-------|-------|--------|
+| 15 | Protocols & Behaviours | Polymorphism, contracts, dependency injection | 📝 Planned |
+| 16 | Testing in Elixir | ExUnit, Mox, factories, testing Broadway/GraphQL | 📝 Planned |
+| 17 | WebSockets & Real-Time | Phoenix Channels, webhooks, PubSub | 📝 Planned |
 
 See [CURRICULUM.md](CURRICULUM.md) for detailed session content.
 
@@ -148,4 +170,12 @@ Found an issue or want to add content? Please open a PR or issue.
 
 ## License
 
-Internal training material - [Your Organization]
+Copyright 2026 Ronald Munoz
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+

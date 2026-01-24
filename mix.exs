@@ -36,8 +36,10 @@ defmodule ElixirTraining.MixProject do
         "test.pending": :test,
         "session1.pending": :test,
         "session2.pending": :test,
+        "session3.pending": :test,
         "validate.session1": :test,
-        "validate.session2": :test
+        "validate.session2": :test,
+        "validate.session3": :test
       ]
     ]
   end
@@ -85,11 +87,13 @@ defmodule ElixirTraining.MixProject do
       # Usage: mix session1.pending, mix session2.pending, etc.
       "session1.pending": ["test test/session_01_basics/ --include pending"],
       "session2.pending": ["test test/session_02_pattern_matching/ --include pending"],
+      "session3.pending": ["test test/session_03_collections/ --include pending"],
       "test.pending": ["test test/session_*/ --include pending"],
 
       # Validate a session (compile + test)
       "validate.session1": ["compile --warnings-as-errors", "session1"],
       "validate.session2": ["compile --warnings-as-errors", "session2"],
+      "validate.session3": ["compile --warnings-as-errors", "session3"],
 
       # Check code quality
       lint: ["format --check-formatted", "compile --warnings-as-errors"]

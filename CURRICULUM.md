@@ -1,19 +1,22 @@
 # Elixir Beginner Training Curriculum
 
-**Target Audience:** Engineers with OOP backgrounds (Java, C#, Python) transitioning to Elixir
+**Target Audience:** Engineers with OOP backgrounds (Java, C#, Python) transitioning to Elixir for Bill.com/Juno development
 **Format:** Workshop sessions with hands-on coding
-**Duration:** 8-12 sessions (expandable)
+**Duration:** 15-17 sessions (with optional advanced sessions)
 
 ---
 
 ## Learning Path Overview
 
 ```
-Session 1-3:   Foundations (Syntax, FP Mindset, Pattern Matching)
-Session 4-6:   Concurrency & OTP (Processes, GenServer, Supervision)
-Session 7-9:   Data & Integration (Ecto, HTTP Clients, Testing)
-Session 10-12: Production Patterns (Kafka, gRPC, WebSockets)
+Session 1-3:   Foundations (Syntax, FP Mindset, Pattern Matching, Collections)
+Session 4-8:   Architecture & Concurrency (Umbrella Apps, Processes, GenServer, Supervision, Oban)
+Session 9-10:  Data Layer (Ecto Basics, Advanced Ecto with Multi-tenancy)
+Session 11-14: Integration Patterns (HTTP, GraphQL, Broadway/Kafka, gRPC)
+Session 15-17: Advanced Patterns (Protocols/Behaviours, Testing, WebSockets)
 ```
+
+**Note:** This curriculum is optimized for engineers working on the Juno codebase at Bill.com, covering the technologies and patterns used in production.
 
 ---
 
@@ -133,7 +136,51 @@ end)
 
 ---
 
-## Session 4: Processes - Lightweight Concurrency
+## Session 4: Umbrella Applications & Project Architecture
+
+### Objectives
+- Understand umbrella applications and when to use them
+- Navigate multi-app Elixir projects effectively
+- Apply bounded context principles to code organization
+- Understand cross-app dependencies
+
+### Topics
+1. **Umbrella Applications Explained**
+   - What are umbrella apps? Why use them?
+   - Juno's 44+ sub-applications architecture
+   - Monolith vs microservices vs umbrella (best of both worlds)
+
+2. **Project Organization**
+   - Bounded contexts (Core, Bank, SharedDb, APIs)
+   - Where to put new code
+   - Avoiding circular dependencies
+   - Shared vs isolated dependencies
+
+3. **Real-World Juno Structure**
+   - `/apps/core` - Business logic and orchestration
+   - `/apps/bank` - Banking partner integrations
+   - `/apps/shared_db` - Ecto schemas and database access
+   - `/apps/user_api` and `/apps/admin_api` - GraphQL endpoints
+   - Domain-specific apps (accounting_integrations, notifications, etc.)
+
+4. **Working Across Apps**
+   - How apps communicate
+   - Public vs internal APIs
+   - Testing across app boundaries
+
+### Hands-On Exercise
+Explore a mini umbrella application with multiple apps, add a new feature that spans contexts.
+
+```elixir
+# Understanding when code belongs in different apps
+# apps/core/lib/core/cards.ex vs
+# apps/bank/lib/bank/card_issuer.ex vs
+# apps/shared_db/lib/shared_db/cards/card.ex
+```
+
+---
+
+## Session 5: Processes - Lightweight Concurrency
 
 ### Objectives
 - Understand the Actor model
@@ -161,7 +208,7 @@ Build a simple in-memory rate limiter using processes.
 
 ---
 
-## Session 5: GenServer - The Foundation of OTP
+## Session 6: GenServer - The Foundation of OTP
 
 ### Objectives
 - Implement stateful services with GenServer
@@ -205,7 +252,7 @@ end
 
 ---
 
-## Session 6: Supervision Trees - Let It Crash
+## Session 7: Supervision Trees - Let It Crash
 
 ### Objectives
 - Design supervision strategies
@@ -236,7 +283,66 @@ Design a supervision tree for a payment processing service with:
 
 ---
 
-## Session 7: Ecto - Database Interactions
+## Session 8: Oban - Background Job Processing
+
+### Objectives
+- Understand when to use background jobs vs GenServers
+- Implement reliable background workers with Oban
+- Handle job retries and dead letter queues
+- Design for idempotency
+
+### Topics
+1. **Background Jobs vs Long-Running Processes**
+   - When to use Oban (jobs) vs GenServer (stateful processes)
+   - Job queues for async work
+   - Use cases in Juno (50+ SQS queues, Oban workers)
+
+2. **Oban Fundamentals**
+   - Defining workers
+   - Enqueueing jobs (immediate, scheduled, recurring)
+   - Queue configuration and priorities
+   - Job lifecycle and states
+
+3. **Reliability Patterns**
+   - Automatic retries with exponential backoff
+   - Dead letter queues for failed jobs
+   - Unique jobs and duplicate prevention
+   - Idempotent job design
+
+4. **Production Patterns from Juno**
+   - Multiple queues with different priorities
+   - Scheduled jobs (daily reports, cleanup tasks)
+   - Job monitoring and observability
+   - Graceful shutdowns
+
+### Hands-On Exercise
+Build an invoice processing worker that:
+- Processes invoices asynchronously
+- Retries on transient failures
+- Handles duplicates gracefully
+- Reports failures to a dead letter queue
+
+```elixir
+defmodule InvoiceProcessor do
+  use Oban.Worker, queue: :invoices, max_attempts: 3
+
+  @impl Oban.Worker
+  def perform(%Oban.Job{args: %{"invoice_id" => id}}) do
+    # Process invoice
+    # Handle errors with {:error, reason} for retries
+    # Or {:discard, reason} to give up
+  end
+end
+
+# Enqueue a job
+%{invoice_id: 123}
+|> InvoiceProcessor.new()
+|> Oban.insert()
+```
+
+---
+
+## Session 9: Ecto - Database Interactions
 
 ### Objectives
 - Define schemas and changesets
@@ -264,7 +370,65 @@ Build a `Transactions` context with proper changeset validations for financial d
 
 ---
 
-## Session 8: HTTP Clients & External Integrations
+## Session 10: Advanced Ecto - Multi-tenancy & Complex Patterns
+
+### Objectives
+- Implement multi-tenancy patterns (critical for Juno)
+- Write complex queries with joins and aggregations
+- Use Ecto.Multi for multi-step transactions
+- Optimize queries with preloading strategies
+
+### Topics
+1. **Multi-tenancy Patterns**
+   - Company-scoped queries (used everywhere in Juno)
+   - Dynamic query composition
+   - Preventing data leakage across tenants
+   - Foreign key scoping
+
+2. **Advanced Queries**
+   - Joins and associations
+   - Aggregations (sum, count, group_by)
+   - Subqueries
+   - Query fragments for complex SQL
+   - Window functions
+
+3. **Ecto.Multi - Composable Transactions**
+   - Building multi-step operations
+   - Rollback on any step failure
+   - Dependent steps
+   - Pattern used extensively in Juno
+
+4. **Performance Optimization**
+   - N+1 query problems
+   - Preload vs join strategies
+   - Batch loading
+   - Database indexes
+
+### Hands-On Exercise
+Build a multi-tenant expense reporting system:
+- Ensure all queries are company-scoped
+- Create a transaction that updates multiple tables atomically
+- Write reports with complex aggregations
+- Optimize for performance
+
+```elixir
+defmodule ExpenseReport do
+  # Multi-step transaction with Ecto.Multi
+  def submit_expense_report(company_id, user_id, expense_ids) do
+    Multi.new()
+    |> Multi.run(:validate_expenses, fn repo, _ ->
+      validate_all_expenses_belong_to_company(repo, company_id, expense_ids)
+    end)
+    |> Multi.insert(:report, build_report_changeset(company_id, user_id))
+    |> Multi.update_all(:mark_submitted, mark_expenses_submitted_query(expense_ids), [])
+    |> Repo.transaction()
+  end
+end
+```
+
+---
+
+## Session 11: HTTP Clients & External Integrations
 
 ### Objectives
 - Make HTTP requests with proper error handling
@@ -292,7 +456,166 @@ Build a robust client for a credit bureau API with retries and circuit breaker.
 
 ---
 
-## Session 9: Testing in Elixir
+## Session 12: GraphQL with Absinthe
+
+### Objectives
+- Understand GraphQL and why Juno uses it
+- Define schemas and resolvers with Absinthe
+- Handle authentication and authorization
+- Prevent N+1 queries with Dataloader
+- Implement subscriptions for real-time updates
+
+### Topics
+1. **GraphQL Fundamentals**
+   - Why GraphQL? (Juno's primary API layer)
+   - Queries, mutations, subscriptions
+   - Schema definition language
+   - Comparison with REST
+
+2. **Absinthe Basics**
+   - Defining object types
+   - Writing resolvers
+   - Input validation
+   - Error handling
+
+3. **Context & Middleware**
+   - Authentication in resolvers
+   - Authorization with middleware
+   - Context building
+   - Plugs in the GraphQL pipeline
+
+4. **Dataloader - Solving N+1 Queries**
+   - Batch loading associations
+   - Preloading in resolvers
+   - Performance optimization
+   - Pattern used heavily in user_api/admin_api
+
+5. **Subscriptions**
+   - Phoenix.PubSub integration
+   - Real-time updates
+   - Connection management
+
+### Hands-On Exercise
+Build a GraphQL API for expense management:
+- Define schema for expenses, users, categories
+- Implement queries with nested data
+- Use Dataloader to prevent N+1 queries
+- Add mutations for creating/updating expenses
+- Implement authorization middleware
+
+```elixir
+defmodule ExpenseApi.Schema do
+  use Absinthe.Schema
+  import_types ExpenseApi.Schema.ExpenseTypes
+
+  query do
+    field :expenses, list_of(:expense) do
+      arg :company_id, non_null(:id)
+      resolve &ExpenseResolver.list_expenses/3
+    end
+  end
+
+  mutation do
+    field :submit_expense, :expense do
+      arg :input, non_null(:expense_input)
+      middleware ExpenseApi.Middleware.Authenticate
+      resolve &ExpenseResolver.submit_expense/3
+    end
+  end
+end
+```
+
+---
+
+## Session 13: Broadway & Kafka Integration
+
+### Objectives
+- Understand event-driven architecture at Juno
+- Process Kafka messages with Broadway pipelines
+- Handle acknowledgment and error scenarios
+- Design for idempotent message processing
+
+### Topics
+1. **Event-Driven Architecture**
+   - Why Kafka? (100+ consumers in Juno)
+   - Event sourcing patterns
+   - Debezium CDC (database change data capture)
+   - Kafka topics in Juno (juno.*, spend.*, etc.)
+
+2. **Broadway Fundamentals**
+   - Declarative data processing pipelines
+   - Producer, processor, batcher stages
+   - Automatic acknowledgment
+   - Concurrency and batching
+
+3. **Kafka with Broadway**
+   - BroadwayKafka producer
+   - Consumer groups and partition assignment
+   - Offset management
+   - Message deserialization (JSON, Avro, Protobuf)
+
+4. **Reliability Patterns**
+   - Exactly-once semantics (or as close as possible)
+   - Idempotent message handlers
+   - Dead letter queues
+   - Backpressure and rate limiting
+   - Handling poison messages
+
+5. **Production Patterns from Juno**
+   - Sanitizers for Debezium events
+   - Event transformation pipelines
+   - Cross-service communication via events
+   - Monitoring and alerting
+
+### Hands-On Exercise
+Build a Broadway pipeline that:
+- Consumes transaction events from Kafka
+- Processes them in batches
+- Handles failures with retries
+- Ensures idempotency (duplicate events don't cause issues)
+
+```elixir
+defmodule TransactionEventConsumer do
+  use Broadway
+
+  def start_link(_opts) do
+    Broadway.start_link(__MODULE__,
+      name: __MODULE__,
+      producer: [
+        module: {BroadwayKafka.Producer, [
+          hosts: [localhost: 9092],
+          group_id: "transaction_processor",
+          topics: ["transactions.created"]
+        ]},
+        concurrency: 10
+      ],
+      processors: [
+        default: [concurrency: 20]
+      ],
+      batchers: [
+        default: [batch_size: 100, batch_timeout: 1000]
+      ]
+    )
+  end
+
+  @impl true
+  def handle_message(_processor, message, _context) do
+    # Process individual message
+    # Mark for batching or handle immediately
+    message
+  end
+
+  @impl true
+  def handle_batch(_batcher, messages, _batch_info, _context) do
+    # Process batch of messages efficiently
+    messages
+  end
+end
+```
+
+---
+
+## Session 14: gRPC Services
 
 ### Objectives
 - Write effective ExUnit tests
@@ -316,7 +639,16 @@ Build a robust client for a credit bureau API with retries and circuit breaker.
    - Testing external integrations
 
 ### Hands-On Exercise
-Write comprehensive tests for the CreditLimitCache from Session 5.
+Write comprehensive tests for:
+- The CreditLimitCache GenServer from Session 6
+- A Broadway pipeline processor
+- GraphQL resolvers with authentication
+- Multi-tenancy with Ecto sandboxing
+
+**Juno-Specific Patterns:**
+- Use ExMachina factories like Juno does
+- Test with Ecto sandbox for isolation
+- Mock external services with Mox (BankClientMock pattern)
 
 ---
 
@@ -348,7 +680,7 @@ Build a transaction event consumer that processes financial events idempotently.
 
 ---
 
-## Session 11: gRPC Services
+## Session 14: gRPC Services
 
 ### Objectives
 - Define and implement gRPC services
@@ -376,7 +708,87 @@ Implement a gRPC service for credit limit checks.
 
 ---
 
-## Session 12: WebSockets & Real-Time Features
+## Session 15: Protocols, Behaviours & Polymorphism
+
+### Objectives
+- Understand polymorphism in Elixir (protocols vs behaviours)
+- Implement protocols for polymorphic dispatch
+- Define and implement behaviours for contracts
+- Apply dependency injection patterns used in Juno
+
+### Topics
+1. **Protocols - Polymorphism for Data**
+   - What are protocols?
+   - Defining and implementing protocols
+   - Protocol dispatch
+   - Examples: String.Chars, Enumerable, Inspect
+
+2. **Behaviours - Contracts for Modules**
+   - Defining behaviours with `@callback`
+   - Implementing behaviours
+   - Compile-time contract verification
+   - Comparison with OOP interfaces
+
+3. **Real Patterns from Juno**
+   - `BankClient` behaviour with multiple implementations
+     - MarqetaClient, WexClient, ChaseClient
+   - Notification protocols for different channels
+   - Feature flag behaviours (LaunchDarkly abstraction)
+   - Payment method handlers
+
+4. **Dependency Injection**
+   - Application config for behaviour selection
+   - Runtime module selection
+   - Testing with mock implementations (via behaviours + Mox)
+
+### Hands-On Exercise
+Build a payment gateway abstraction:
+- Define a `PaymentGateway` behaviour
+- Implement for multiple providers (Stripe, PayPal, Square)
+- Use protocols for formatting payment responses
+- Inject the implementation via config
+
+```elixir
+# Define behaviour
+defmodule PaymentGateway do
+  @callback charge(amount :: Money.t(), source :: String.t()) ::
+    {:ok, transaction_id :: String.t()} | {:error, reason :: String.t()}
+
+  @callback refund(transaction_id :: String.t()) ::
+    {:ok, refund_id :: String.t()} | {:error, reason :: String.t()}
+end
+
+# Implementations
+defmodule StripeGateway do
+  @behaviour PaymentGateway
+
+  @impl true
+  def charge(amount, source), do: # ...
+
+  @impl true
+  def refund(transaction_id), do: # ...
+end
+
+# Protocol for formatting
+defprotocol PaymentFormatter do
+  @doc "Format payment details for display"
+  def format(payment)
+end
+
+defimpl PaymentFormatter, for: CreditCard do
+  def format(%CreditCard{last_four: last_four}),
+    do: "Card ending in #{last_four}"
+end
+
+defimpl PaymentFormatter, for: BankAccount do
+  def format(%BankAccount{account_number: num}),
+    do: "Bank account #{num}"
+end
+```
+
+---
+
+## Session 16: Testing in Elixir
 
 ### Objectives
 - Implement WebSocket connections
@@ -404,27 +816,101 @@ Build a real-time transaction notification system.
 
 ---
 
+## Session 17: WebSockets & Real-Time Features
+
+### Objectives
+- Implement WebSocket connections with Phoenix
+- Handle webhook receivers securely
+- Build real-time notifications
+- Understand PubSub patterns
+
+### Topics
+1. **WebSocket Servers with Phoenix**
+   - Phoenix Channels
+   - Connection lifecycle
+   - Message handling
+   - Broadcasting to multiple clients
+   - Presence tracking
+
+2. **Webhook Receivers**
+   - Verification and security (HMAC signatures)
+   - Idempotent processing
+   - Async processing patterns
+   - Handling retries from webhook senders
+
+3. **Phoenix.PubSub**
+   - Broadcasting across nodes
+   - Topic subscriptions
+   - Integration with GraphQL subscriptions
+   - Real-time updates in Juno
+
+4. **Putting It All Together**
+   - Real-time transaction notifications
+   - System-wide events
+   - Monitoring and debugging WebSocket connections
+
+### Hands-On Exercise
+Build a real-time transaction notification system that:
+- Connects users via WebSocket
+- Broadcasts transaction events in real-time
+- Handles webhook callbacks from banking partners
+- Ensures security and idempotency
+
+```elixir
+defmodule NotificationChannel do
+  use Phoenix.Channel
+
+  def join("transactions:" <> company_id, _params, socket) do
+    # Authenticate and authorize
+    {:ok, assign(socket, :company_id, company_id)}
+  end
+
+  def handle_in("subscribe", %{"account_id" => account_id}, socket) do
+    # Subscribe to account-specific events
+    {:reply, :ok, socket}
+  end
+
+  # Broadcast to all connected clients for a company
+  def broadcast_transaction(company_id, transaction) do
+    Endpoint.broadcast("transactions:#{company_id}", "new_transaction", transaction)
+  end
+end
+```
+
+---
+
 ## Appendix: Additional Topics for Future Sessions
 
 ### Advanced OTP
-- GenStage and Flow for data pipelines
+- GenStage and Flow for data pipelines (beyond Broadway)
 - DynamicSupervisor patterns
 - Registry and process discovery
+- Distributed Elixir (libcluster, clustering strategies)
 
 ### Advanced Data
-- Custom Ecto types
-- Multi-tenancy patterns
+- Custom Ecto types (Money, encrypted fields)
 - Read replicas and write splitting
+- Database connection pooling strategies
+- Working with database views and materialized views
 
-### Infrastructure
+### Infrastructure & Integration
 - OpenSearch/Elasticsearch integration
 - Custom Ecto adapters
 - Apache Flink integration patterns
+- AWS integrations (S3, SQS, SNS, Secrets Manager)
 
-### Observability
-- Telemetry and metrics
-- Distributed tracing
-- Logging best practices
+### Observability & Operations
+- Telemetry and metrics (StatsD, Datadog)
+- Distributed tracing with Spandex
+- Logging best practices (structured logging, log aggregation)
+- Hot code upgrades and releases
+
+### Juno-Specific Deep Dives
+- Navigating the Juno codebase (Core.Supervisor walkthrough)
+- Understanding Juno's domain model (Companies, Cards, Transactions, Budgets)
+- Banking partner abstractions (Marqeta, WEX, Chase)
+- State machines with EctoStateMachine
+- Working with Juno's test factories
 
 ---
 
