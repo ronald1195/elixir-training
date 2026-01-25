@@ -1,6 +1,6 @@
 # Elixir Beginner Training Curriculum
 
-**Target Audience:** Engineers with OOP backgrounds (Java, C#, Python) transitioning to Elixir for Bill.com/Juno development
+**Target Audience:** Engineers with OOP backgrounds (Java, C#, Python) transitioning to Elixir for production application development
 **Format:** Workshop sessions with hands-on coding
 **Duration:** 15-17 sessions (with optional advanced sessions)
 
@@ -16,7 +16,7 @@ Session 11-14: Integration Patterns (HTTP, GraphQL, Broadway/Kafka, gRPC)
 Session 15-17: Advanced Patterns (Protocols/Behaviours, Testing, WebSockets)
 ```
 
-**Note:** This curriculum is optimized for engineers working on the Juno codebase at Bill.com, covering the technologies and patterns used in production.
+**Note:** This curriculum is optimized for engineers working on large-scale production Elixir applications, covering the technologies and patterns commonly used in the industry.
 
 ---
 
@@ -147,7 +147,7 @@ end)
 ### Topics
 1. **Umbrella Applications Explained**
    - What are umbrella apps? Why use them?
-   - Juno's 44+ sub-applications architecture
+   - Real-world example: 40+ sub-applications architecture
    - Monolith vs microservices vs umbrella (best of both worlds)
 
 2. **Project Organization**
@@ -156,12 +156,12 @@ end)
    - Avoiding circular dependencies
    - Shared vs isolated dependencies
 
-3. **Real-World Juno Structure**
+3. **Real-World Application Structure**
    - `/apps/core` - Business logic and orchestration
-   - `/apps/bank` - Banking partner integrations
+   - `/apps/integrations` - External service integrations
    - `/apps/shared_db` - Ecto schemas and database access
-   - `/apps/user_api` and `/apps/admin_api` - GraphQL endpoints
-   - Domain-specific apps (accounting_integrations, notifications, etc.)
+   - `/apps/api` and `/apps/admin_api` - GraphQL endpoints
+   - Domain-specific apps (accounting, notifications, payments, etc.)
 
 4. **Working Across Apps**
    - How apps communicate
@@ -295,7 +295,7 @@ Design a supervision tree for a payment processing service with:
 1. **Background Jobs vs Long-Running Processes**
    - When to use Oban (jobs) vs GenServer (stateful processes)
    - Job queues for async work
-   - Use cases in Juno (50+ SQS queues, Oban workers)
+   - Common use cases (50+ queues, multiple workers in large applications)
 
 2. **Oban Fundamentals**
    - Defining workers
@@ -309,7 +309,7 @@ Design a supervision tree for a payment processing service with:
    - Unique jobs and duplicate prevention
    - Idempotent job design
 
-4. **Production Patterns from Juno**
+4. **Production Patterns**
    - Multiple queues with different priorities
    - Scheduled jobs (daily reports, cleanup tasks)
    - Job monitoring and observability
@@ -373,14 +373,14 @@ Build a `Transactions` context with proper changeset validations for financial d
 ## Session 10: Advanced Ecto - Multi-tenancy & Complex Patterns
 
 ### Objectives
-- Implement multi-tenancy patterns (critical for Juno)
+- Implement multi-tenancy patterns (critical for SaaS applications)
 - Write complex queries with joins and aggregations
 - Use Ecto.Multi for multi-step transactions
 - Optimize queries with preloading strategies
 
 ### Topics
 1. **Multi-tenancy Patterns**
-   - Company-scoped queries (used everywhere in Juno)
+   - Tenant-scoped queries (essential for SaaS applications)
    - Dynamic query composition
    - Preventing data leakage across tenants
    - Foreign key scoping
@@ -396,7 +396,7 @@ Build a `Transactions` context with proper changeset validations for financial d
    - Building multi-step operations
    - Rollback on any step failure
    - Dependent steps
-   - Pattern used extensively in Juno
+   - Pattern used extensively in production
 
 4. **Performance Optimization**
    - N+1 query problems
@@ -459,7 +459,7 @@ Build a robust client for a credit bureau API with retries and circuit breaker.
 ## Session 12: GraphQL with Absinthe
 
 ### Objectives
-- Understand GraphQL and why Juno uses it
+- Understand GraphQL and its benefits for APIs
 - Define schemas and resolvers with Absinthe
 - Handle authentication and authorization
 - Prevent N+1 queries with Dataloader
@@ -467,7 +467,7 @@ Build a robust client for a credit bureau API with retries and circuit breaker.
 
 ### Topics
 1. **GraphQL Fundamentals**
-   - Why GraphQL? (Juno's primary API layer)
+   - Why GraphQL? (Modern API architecture)
    - Queries, mutations, subscriptions
    - Schema definition language
    - Comparison with REST
@@ -530,17 +530,17 @@ end
 ## Session 13: Broadway & Kafka Integration
 
 ### Objectives
-- Understand event-driven architecture at Juno
+- Understand event-driven architecture patterns
 - Process Kafka messages with Broadway pipelines
 - Handle acknowledgment and error scenarios
 - Design for idempotent message processing
 
 ### Topics
 1. **Event-Driven Architecture**
-   - Why Kafka? (100+ consumers in Juno)
+   - Why Kafka? (100+ consumers in large applications)
    - Event sourcing patterns
    - Debezium CDC (database change data capture)
-   - Kafka topics in Juno (juno.*, spend.*, etc.)
+   - Topic organization and naming conventions
 
 2. **Broadway Fundamentals**
    - Declarative data processing pipelines
@@ -561,7 +561,7 @@ end
    - Backpressure and rate limiting
    - Handling poison messages
 
-5. **Production Patterns from Juno**
+5. **Production Patterns**
    - Sanitizers for Debezium events
    - Event transformation pipelines
    - Cross-service communication via events
@@ -645,10 +645,10 @@ Write comprehensive tests for:
 - GraphQL resolvers with authentication
 - Multi-tenancy with Ecto sandboxing
 
-**Juno-Specific Patterns:**
-- Use ExMachina factories like Juno does
+**Production Testing Patterns:**
+- Use ExMachina factories for test data
 - Test with Ecto sandbox for isolation
-- Mock external services with Mox (BankClientMock pattern)
+- Mock external services with Mox (behavior-based mocking)
 
 ---
 
@@ -714,7 +714,7 @@ Implement a gRPC service for credit limit checks.
 - Understand polymorphism in Elixir (protocols vs behaviours)
 - Implement protocols for polymorphic dispatch
 - Define and implement behaviours for contracts
-- Apply dependency injection patterns used in Juno
+- Apply dependency injection patterns in production code
 
 ### Topics
 1. **Protocols - Polymorphism for Data**
@@ -729,11 +729,11 @@ Implement a gRPC service for credit limit checks.
    - Compile-time contract verification
    - Comparison with OOP interfaces
 
-3. **Real Patterns from Juno**
-   - `BankClient` behaviour with multiple implementations
-     - MarqetaClient, WexClient, ChaseClient
+3. **Real-World Patterns**
+   - `PaymentGateway` behaviour with multiple implementations
+     - StripeClient, PayPalClient, SquareClient
    - Notification protocols for different channels
-   - Feature flag behaviours (LaunchDarkly abstraction)
+   - Feature flag behaviours (feature toggle abstraction)
    - Payment method handlers
 
 4. **Dependency Injection**
@@ -842,7 +842,7 @@ Build a real-time transaction notification system.
    - Broadcasting across nodes
    - Topic subscriptions
    - Integration with GraphQL subscriptions
-   - Real-time updates in Juno
+   - Real-time updates in production applications
 
 4. **Putting It All Together**
    - Real-time transaction notifications
@@ -905,12 +905,12 @@ end
 - Logging best practices (structured logging, log aggregation)
 - Hot code upgrades and releases
 
-### Juno-Specific Deep Dives
-- Navigating the Juno codebase (Core.Supervisor walkthrough)
-- Understanding Juno's domain model (Companies, Cards, Transactions, Budgets)
-- Banking partner abstractions (Marqeta, WEX, Chase)
+### Production Application Deep Dives
+- Navigating large codebases (Supervisor hierarchy walkthrough)
+- Understanding complex domain models (Multi-entity relationships)
+- External service abstractions (Payment gateways, APIs)
 - State machines with EctoStateMachine
-- Working with Juno's test factories
+- Working with ExMachina test factories
 
 ---
 

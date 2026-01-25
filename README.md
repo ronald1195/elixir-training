@@ -6,7 +6,7 @@ A hands-on training curriculum for engineers transitioning to Elixir from OOP la
 
 ## Overview
 
-This repository contains workshop materials, exercises, and solutions for learning Elixir in the context of building reliable financial services. The curriculum is targets engineers working at Bill but this material should be relevant for anyone, specially those new to Elixir.
+This repository contains workshop materials, exercises, and solutions for learning Elixir in the context of building reliable financial services. The curriculum targets engineers working on production Elixir applications, with a focus on fintech and SaaS patterns.
 
 **Target Audience:** Engineers with Java, C#, Python or similar OOP backgrounds transitioning to Elixir
 
@@ -56,7 +56,7 @@ mix session2   # Session 2: Pattern Matching
 ### Architecture & Concurrency (Sessions 4-8)
 | Session | Topic | Focus | Status |
 |---------|-------|-------|--------|
-| 4 | Umbrella Applications | Multi-app projects, bounded contexts, Juno structure | 📝 Planned |
+| 4 | Umbrella Applications | Multi-app projects, bounded contexts, real-world structure | 📝 Planned |
 | 5 | Processes | Actor model, spawning, message passing | 📝 Planned |
 | 6 | GenServer | Stateful services, call vs cast, OTP patterns | 📝 Planned |
 | 7 | Supervision Trees | Fault tolerance, restart strategies, let it crash | 📝 Planned |

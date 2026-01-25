@@ -53,7 +53,7 @@
 - [ ] Create `lib/session_04_umbrella/` module structure
 - [ ] Create mini umbrella app for exploration
 - [ ] Write exercises on bounded contexts
-- [ ] Add Juno structure navigation exercises
+- [ ] Add real-world application structure navigation exercises
 
 ### Session 5: Processes
 - [ ] Write theory/slides content
@@ -142,7 +142,7 @@
 - [ ] Implement payment gateway behaviour exercise
 - [ ] Add protocol implementation examples
 - [ ] Write dependency injection patterns
-- [ ] Add examples from Juno (BankClient pattern)
+- [ ] Add real-world examples (PaymentGateway pattern)
 
 ### Session 16: Testing in Elixir
 - [ ] Write theory/slides content
@@ -216,16 +216,16 @@
 - [ ] Distributed Elixir (libcluster strategies)
 - [ ] Hot code upgrades and releases
 
-### Juno-Specific Deep Dive Sessions
-- [ ] Session 18: Navigating the Juno Codebase
-  - Core.Supervisor walkthrough
+### Advanced Deep Dive Sessions
+- [ ] Session 18: Navigating Large Codebases
+  - Application Supervisor walkthrough
   - Finding the right context for changes
   - Understanding the umbrella structure
-- [ ] Session 19: Juno's Domain Model
-  - Companies, Users, Cards, Transactions, Budgets
-  - Banking partner abstractions
+- [ ] Session 19: Complex Domain Models
+  - Multi-entity relationships
+  - External service abstractions
   - State machines with EctoStateMachine
-- [ ] Session 20: Working with Juno's Test Suite
+- [ ] Session 20: Production Testing Strategies
   - ExMachina factories deep dive
   - Testing strategies for complex scenarios
   - CI/CD and test performance
