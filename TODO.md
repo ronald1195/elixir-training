@@ -49,115 +49,106 @@
 - [x] Create solution files
 
 ### Session 4: Umbrella Applications & Project Architecture
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_04_umbrella/` module structure
-- [ ] Create mini umbrella app for exploration
-- [ ] Write exercises on bounded contexts
-- [ ] Add real-world application structure navigation exercises
+- [x] Write theory/slides content
+- [x] Create `lib/session_04_umbrella/` module structure
+- [x] Create ProjectExplorer exercise for dependency analysis
+- [x] Write exercises on bounded contexts
+- [x] Add real-world application structure navigation exercises
 
 ### Session 5: Processes
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_04_processes/` module structure
-- [ ] Implement rate limiter exercise
-- [ ] Write tests for rate limiter
-- [ ] Add message passing exercises
+- [x] Write theory/slides content
+- [x] Create `lib/session_05_processes/` module structure
+- [x] Implement rate limiter exercise
+- [x] Write tests for rate limiter
+- [x] Add message passing exercises
 
 ### Session 6: GenServer
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_05_genserver/` module structure
-- [ ] Implement `CreditLimitCache` exercise
-- [ ] Write tests for CreditLimitCache
-- [ ] Add connection pool exercise
+- [x] Write theory/slides content
+- [x] Create `lib/session_06_genserver/` module structure
+- [x] Implement `CreditLimitCache` exercise
+- [x] Write tests for CreditLimitCache
+- [x] Add TTL and expiration examples
 
 ### Session 7: Supervision Trees
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_06_supervision/` module structure
-- [ ] Design payment processing supervision tree exercise
-- [ ] Write tests for supervision scenarios
-- [ ] Add failure injection exercises
+- [x] Write theory/slides content
+- [x] Create `lib/session_07_supervision/` module structure
+- [x] Design payment processing supervision tree exercise
+- [x] Write tests for supervision scenarios
+- [x] Add restart strategy examples
 
 ### Session 8: Oban - Background Job Processing
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_08_oban/` module structure
-- [ ] Implement invoice processing worker exercise
-- [ ] Write tests for Oban workers
-- [ ] Add job scheduling and retry examples
+- [x] Write theory/slides content
+- [x] Create `lib/session_08_oban/` module structure
+- [x] Implement invoice processing worker exercise
+- [x] Write tests for Oban workers
+- [x] Add job scheduling and retry examples
 
 ### Session 9: Ecto Basics
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_07_ecto/` module structure
-- [ ] Set up test database configuration
-- [ ] Implement `Transactions` context exercise
-- [ ] Write changeset validation tests
-- [ ] Add Ecto.Multi exercise
+- [x] Write theory/slides content
+- [x] Create `lib/session_09_ecto/` module structure
+- [x] Set up test database configuration (PostgreSQL)
+- [x] Implement Account schema and Accounts context exercises
+- [x] Write changeset validation tests
+- [x] Add transaction exercises
 
 ### Session 10: Advanced Ecto - Multi-tenancy & Complex Patterns
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_10_advanced_ecto/` module structure
-- [ ] Implement multi-tenant expense reporting exercise
-- [ ] Add Ecto.Multi examples
-- [ ] Write complex query exercises
-- [ ] Add performance optimization exercises
+- [x] Write theory/slides content
+- [x] Create `lib/session_10_advanced_ecto/` module structure
+- [x] Implement multi-tenant expense reporting exercise
+- [x] Add Ecto.Multi examples
+- [x] Write complex query exercises
+- [x] Add aggregation and performance exercises
 
 ### Session 11: HTTP Clients
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_08_http/` module structure
-- [ ] Implement credit bureau client exercise
-- [ ] Add circuit breaker integration
-- [ ] Write tests with mocked HTTP responses
+- [x] Write theory/slides content
+- [x] Create `lib/session_11_http/` module structure
+- [x] Implement credit bureau client exercise
+- [x] Add circuit breaker integration (Fuse)
+- [x] Write tests with configurable behaviors
 
 ### Session 12: GraphQL with Absinthe
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_12_graphql/` module structure
-- [ ] Implement GraphQL schema and resolvers
-- [ ] Add Dataloader exercises
-- [ ] Write authentication/authorization examples
-- [ ] Add subscription exercises
+- [x] Write theory/slides content
+- [x] Create `lib/session_12_graphql/` module structure
+- [x] Implement GraphQL schema and resolvers
+- [x] Add expense management queries/mutations
+- [x] Write resolver exercises
 
 ### Session 13: Broadway & Kafka Integration
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_09_testing/` module structure
-- [ ] Create exercises testing previous session code
-- [ ] Add Mox examples
-- [ ] Document testing patterns used in org
-
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_13_broadway/` module structure
-- [ ] Set up local Kafka for development
-- [ ] Implement Broadway pipeline exercise
-- [ ] Add transaction event consumer with Broadway
-- [ ] Write integration tests
-- [ ] Add idempotency patterns
+- [x] Write theory/slides content
+- [x] Create `lib/session_13_broadway/` module structure
+- [x] Implement Broadway pipeline exercise
+- [x] Add transaction event consumer with Broadway
+- [x] Write integration tests
+- [x] Add idempotency patterns
 
 ### Session 14: gRPC Services
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_11_grpc/` module structure
-- [ ] Define protobuf schemas
-- [ ] Implement credit limit gRPC service
-- [ ] Write gRPC tests
+- [x] Write theory/slides content
+- [x] Create `lib/session_14_grpc/` module structure
+- [x] Define protobuf schemas
+- [x] Implement credit limit gRPC service
+- [x] Write gRPC tests
 
 ### Session 15: Protocols, Behaviours & Polymorphism
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_15_protocols/` module structure
-- [ ] Implement payment gateway behaviour exercise
-- [ ] Add protocol implementation examples
-- [ ] Write dependency injection patterns
-- [ ] Add real-world examples (PaymentGateway pattern)
+- [x] Write theory/slides content
+- [x] Create `lib/session_15_protocols/` module structure
+- [x] Implement payment gateway behaviour exercise
+- [x] Add protocol implementation examples
+- [x] Write dependency injection patterns
+- [x] Add real-world examples (PaymentGateway pattern)
 
 ### Session 16: Testing in Elixir
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_16_testing/` module structure
-- [ ] Create exercises testing previous session code
-- [ ] Add Mox examples with behaviours
-- [ ] Document ExMachina factory patterns
-- [ ] Add Broadway and GraphQL testing examples
+- [x] Write theory/slides content
+- [x] Create `lib/session_16_testing/` module structure
+- [x] Create PaymentService as testing subject
+- [x] Add Mox examples with behaviours
+- [x] Document ExMachina factory patterns
 
 ### Session 17: WebSockets & Real-Time Features
-- [ ] Write theory/slides content
-- [ ] Create `lib/session_12_realtime/` module structure
-- [ ] Implement WebSocket notification system
-- [ ] Add webhook receiver exercise
-- [ ] Write tests for real-time features
+- [x] Write theory/slides content
+- [x] Create `lib/session_17_websockets/` module structure
+- [x] Implement PubSub-based notification system
+- [x] Add webhook receiver exercise with HMAC verification
+- [x] Write tests for real-time features
 
 ---
 

@@ -56,32 +56,32 @@ mix session2   # Session 2: Pattern Matching
 ### Architecture & Concurrency (Sessions 4-8)
 | Session | Topic | Focus | Status |
 |---------|-------|-------|--------|
-| 4 | Umbrella Applications | Multi-app projects, bounded contexts, real-world structure | 📝 Planned |
-| 5 | Processes | Actor model, spawning, message passing | 📝 Planned |
-| 6 | GenServer | Stateful services, call vs cast, OTP patterns | 📝 Planned |
-| 7 | Supervision Trees | Fault tolerance, restart strategies, let it crash | 📝 Planned |
-| 8 | Oban | Background jobs, queues, retries, idempotency | 📝 Planned |
+| 4 | Umbrella Applications | Multi-app projects, bounded contexts, real-world structure | ✅ Ready |
+| 5 | Processes | Actor model, spawning, message passing | ✅ Ready |
+| 6 | GenServer | Stateful services, call vs cast, OTP patterns | ✅ Ready |
+| 7 | Supervision Trees | Fault tolerance, restart strategies, let it crash | ✅ Ready |
+| 8 | Oban | Background jobs, queues, retries, idempotency | ✅ Ready |
 
 ### Data Layer (Sessions 9-10)
 | Session | Topic | Focus | Status |
 |---------|-------|-------|--------|
-| 9 | Ecto Basics | Schemas, changesets, queries, transactions | 📝 Planned |
-| 10 | Advanced Ecto | Multi-tenancy, Ecto.Multi, complex queries, performance | 📝 Planned |
+| 9 | Ecto Basics | Schemas, changesets, queries, transactions | ✅ Ready |
+| 10 | Advanced Ecto | Multi-tenancy, Ecto.Multi, complex queries, performance | ✅ Ready |
 
 ### Integration Patterns (Sessions 11-14)
 | Session | Topic | Focus | Status |
 |---------|-------|-------|--------|
-| 11 | HTTP Clients | External integrations, retries, circuit breakers | 📝 Planned |
-| 12 | GraphQL with Absinthe | Schemas, resolvers, Dataloader, subscriptions | 📝 Planned |
-| 13 | Broadway & Kafka | Event-driven architecture, message processing pipelines | 📝 Planned |
-| 14 | gRPC Services | Protobuf, servers, clients, streaming | 📝 Planned |
+| 11 | HTTP Clients | External integrations, retries, circuit breakers | ✅ Ready |
+| 12 | GraphQL with Absinthe | Schemas, resolvers, Dataloader, subscriptions | ✅ Ready |
+| 13 | Broadway & Kafka | Event-driven architecture, message processing pipelines | ✅ Ready |
+| 14 | gRPC Services | Protobuf, servers, clients, streaming | ✅ Ready |
 
 ### Advanced Patterns (Sessions 15-17)
 | Session | Topic | Focus | Status |
 |---------|-------|-------|--------|
-| 15 | Protocols & Behaviours | Polymorphism, contracts, dependency injection | 📝 Planned |
-| 16 | Testing in Elixir | ExUnit, Mox, factories, testing Broadway/GraphQL | 📝 Planned |
-| 17 | WebSockets & Real-Time | Phoenix Channels, webhooks, PubSub | 📝 Planned |
+| 15 | Protocols & Behaviours | Polymorphism, contracts, dependency injection | ✅ Ready |
+| 16 | Testing in Elixir | ExUnit, Mox, factories, testing Broadway/GraphQL | ✅ Ready |
+| 17 | WebSockets & Real-Time | Phoenix Channels, webhooks, PubSub | ✅ Ready |
 
 See [CURRICULUM.md](CURRICULUM.md) for detailed session content.
 
@@ -148,9 +148,10 @@ mix session1
 
 | Sessions | Additional Requirements |
 |----------|------------------------|
-| 7 (Ecto) | PostgreSQL |
-| 10 (Kafka) | Docker or local Kafka |
-| 11 (gRPC) | protoc compiler |
+| 8 (Oban) | PostgreSQL |
+| 9-10 (Ecto) | PostgreSQL |
+| 13 (Broadway/Kafka) | Docker or local Kafka (optional - in-memory producer for testing) |
+| 14 (gRPC) | protoc compiler |
 
 ## CI/CD
 
