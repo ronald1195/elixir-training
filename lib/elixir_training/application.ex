@@ -8,8 +8,12 @@ defmodule ElixirTraining.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      # Starts a worker by calling: ElixirTraining.Worker.start_link(arg)
-      # {ElixirTraining.Worker, arg}
+      # Start the Ecto repository
+      ElixirTraining.Repo,
+      # Start PubSub for real-time features
+      {Phoenix.PubSub, name: ElixirTraining.PubSub},
+      # Start Oban for background jobs
+      {Oban, Application.fetch_env!(:elixir_training, Oban)}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
