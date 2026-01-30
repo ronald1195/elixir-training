@@ -1,0 +1,586 @@
+# Beyond Session 1: Memory, Binding, and the Million Records Problem
+
+```elixir
+Mix.install([
+  {:kino, "~> 0.12"},
+  {:kino_vega_lite, "~> 0.1"}
+])
+```
+
+## Introduction
+
+In Session 1, you learned that Elixir data is **immutable** - when you "change" a variable, you're actually creating a new value. But what does that *really* mean? Where does the old data go? And why should you care?
+
+This interactive notebook will make these concepts concrete by showing you exactly what happens in memory.
+
+## Part 1: Variable Binding is Not Assignment
+
+In languages like Java or Python, `=` is **assignment** - it puts a value into a memory location:
+
+```java
+// Java: x is a box, we're putting 5 in the box
+int x = 5;
+x = 10; // Same box, new value - the 5 is gone forever
+```
+
+In Elixir, `=` is **binding** (technically pattern matching) - it attaches a name to a value:
+
+```elixir
+# Elixir: we're giving the value 5 the name "x"
+x = 5
+# Now "x" points to 10, but 5 still exists (until garbage collected)
+x = 10
+```
+
+### Assignment vs Binding: Side by Side
+
+```mermaid
+graph TB
+    subgraph java["☕ Java: Assignment (mutation)"]
+        direction TB
+        j1["int x = 5"] --> jbox1["📦 5"]
+        jbox1 --> |"x = 10"| jbox2["📦 10"]
+        jnote["Same box,<br/>value replaced.<br/>5 is gone forever."]
+    end
+
+    subgraph elixir["💧 Elixir: Binding (immutable)"]
+        direction TB
+        e1["x = 5"] --> eptr1["x → 5"]
+        eptr1 --> |"x = 10"| estate["x → 10<br/><br/>5 (orphaned, awaits GC)"]
+        enote["x points to new value.<br/>Old value still exists<br/>until garbage collected."]
+    end
+```
+
+Let's visualize the rebinding process step by step:
+
+### How Binding Works (Visual)
+
+```mermaid
+graph LR
+    subgraph "Step 1: x = [1, 2, 3]"
+        x1[x] --> list1["[1, 2, 3]"]
+    end
+```
+
+```mermaid
+graph LR
+    subgraph "Step 2: x = [4, 5, 6] (rebinding)"
+        x2[x] --> list2["[4, 5, 6]"]
+        orphan1["[1, 2, 3]<br/>⚠️ orphaned"]
+        style orphan1 fill:#ffcccc,stroke:#cc0000
+    end
+```
+
+```mermaid
+graph LR
+    subgraph "Step 3: After Garbage Collection"
+        x3[x] --> list3["[4, 5, 6]"]
+        gone["🗑️ [1, 2, 3] removed"]
+        style gone fill:#cccccc,stroke:#999999,stroke-dasharray: 5 5
+    end
+```
+
+**The key difference from OOP:**
+
+* In Java/Python: `x = [4,5,6]` would **overwrite** the memory location, destroying `[1,2,3]` immediately
+* In Elixir: `x = [4,5,6]` makes `x` **point to a new list**, while `[1,2,3]` still exists until GC cleans it up
+
+This is why immutability enables safe concurrency - another process could still be using `[1,2,3]` while we've moved on to `[4,5,6]`!
+
+Let's prove this with actual memory measurements.
+
+### Measuring Process Memory
+
+Every Elixir process has its own memory heap. We can inspect it:
+
+```elixir
+defmodule MemoryHelper do
+  @doc """
+  Returns the current process memory in kilobytes, with optional label for display.
+  """
+  def measure(label \\ "Current") do
+    # Force garbage collection first for accurate "in use" measurement
+    # Comment this out to see memory BEFORE garbage collection
+    # :erlang.garbage_collect()
+
+    {:memory, bytes} = Process.info(self(), :memory)
+    kb = Float.round(bytes / 1024, 2)
+    IO.puts("#{label}: #{kb} KB")
+    kb
+  end
+
+  @doc """
+  Returns memory without printing - useful for collecting data points.
+  """
+  def memory_kb do
+    {:memory, bytes} = Process.info(self(), :memory)
+    Float.round(bytes / 1024, 2)
+  end
+end
+```
+
+### The Rebinding Experiment
+
+Watch what happens when we rebind a variable to increasingly large lists:
+
+```elixir
+# Baseline memory
+MemoryHelper.measure("Baseline")
+
+# Create a list with 100,000 integers
+x = Enum.to_list(1..100_000)
+MemoryHelper.measure("After creating x (100K integers)")
+
+# "Rebind" x to a NEW list - the old list still exists!
+x = Enum.to_list(1..100_000)
+MemoryHelper.measure("After rebinding x (now 2 lists exist!)")
+
+# Rebind again - now 3 lists exist in memory
+x = Enum.to_list(1..100_000)
+MemoryHelper.measure("After rebinding again (3 lists!)")
+
+# The variable x only points to the LAST list
+# But all three lists are still in memory, waiting for garbage collection
+:ok
+```
+
+**Key Insight**: Each rebinding created a NEW list. The old lists weren't deleted - they're just "orphaned" (no variable points to them anymore).
+
+## Part 2: Garbage Collection - The Cleanup Crew
+
+The BEAM VM has a **per-process garbage collector**. This is one of Elixir's superpowers:
+
+* Each process has its own heap and GC
+* When one process collects garbage, other processes aren't affected
+* No "stop the world" pauses that affect your entire application
+
+```mermaid
+graph TB
+    subgraph "Traditional GC (Java, Go, etc.)"
+        direction TB
+        t1["All threads STOP"] --> t2["GC runs globally"] --> t3["All threads resume"]
+        tnote["❌ 'Stop the world' pauses<br/>affect entire application"]
+    end
+
+    subgraph "BEAM GC (Elixir/Erlang)"
+        direction TB
+        b1["Process A"] --> b1gc["GC A"]
+        b2["Process B"] --> b2run["Still running!"]
+        b3["Process C"] --> b3run["Still running!"]
+        bnote["✅ Only affected process pauses<br/>Others continue working"]
+    end
+```
+
+### Demonstrating Garbage Collection
+
+**Important:** GC behavior can be tricky to demonstrate because:
+
+1. The BEAM may trigger GC automatically during allocation
+2. The heap doesn't always shrink immediately after GC (it keeps space for efficiency)
+
+This demo shows the clearest case: create one large value, orphan it, then collect.
+
+```elixir
+# Start clean
+:erlang.garbage_collect()
+baseline = MemoryHelper.memory_kb()
+IO.puts("Step 1 - Baseline: #{baseline} KB")
+
+# Create a large list (500K integers ≈ 4-8 MB)
+big_list = Enum.to_list(1..100_000)
+after_create = MemoryHelper.memory_kb()
+increase = Float.round(after_create - baseline, 2)
+IO.puts("Step 2 - After creating 500K list: #{after_create} KB (+#{increase} KB)")
+
+# Orphan the list by rebinding to something tiny
+big_list = :done
+IO.puts("Step 3 - Rebound big_list to :done")
+IO.puts("         The 500K integer list is now orphaned (no variable references it)")
+
+# Memory before GC - the orphan is still there!
+before_gc = MemoryHelper.memory_kb()
+IO.puts("Step 4 - Before GC: #{before_gc} KB (orphan still in memory)")
+
+# Now trigger garbage collection
+:erlang.garbage_collect()
+after_gc = MemoryHelper.memory_kb()
+reclaimed = Float.round(before_gc - after_gc, 2)
+IO.puts("Step 5 - After GC: #{after_gc} KB")
+IO.puts("         Reclaimed: #{reclaimed} KB")
+
+if reclaimed > 1000 do
+  IO.puts("\n✅ GC successfully cleaned up the orphaned list!")
+else
+  IO.puts("\n⚠️  GC ran but heap didn't shrink much.")
+  IO.puts("   This can happen if the BEAM keeps heap space allocated for efficiency.")
+  IO.puts("   The important thing: the DATA is gone, even if heap size stays.")
+end
+
+:ok
+```
+
+### Visualizing the GC Effect
+
+Let's create a visual representation of memory over time:
+
+```elixir
+alias VegaLite, as: Vl
+
+# Collect memory data points
+data_points =
+  Enum.reduce(1..10, [{0, MemoryHelper.memory_kb(), "baseline"}], fn i, acc ->
+    # Create garbage
+    _garbage = Enum.to_list(1..100_000)
+    before_gc = MemoryHelper.memory_kb()
+
+    # Collect garbage
+    :erlang.garbage_collect()
+    after_gc = MemoryHelper.memory_kb()
+
+    acc ++
+      [
+        {i * 2 - 1, before_gc, "before GC"},
+        {i * 2, after_gc, "after GC"}
+      ]
+  end)
+
+# Format for chart
+chart_data =
+  Enum.map(data_points, fn {step, memory, label} ->
+    %{step: step, memory: memory, phase: label}
+  end)
+
+Vl.new(width: 600, height: 300, title: "Memory Usage: Before vs After Garbage Collection")
+|> Vl.data_from_values(chart_data)
+|> Vl.mark(:line, point: true)
+|> Vl.encode_field(:x, "step", type: :quantitative, title: "Step")
+|> Vl.encode_field(:y, "memory", type: :quantitative, title: "Memory (KB)")
+|> Vl.encode_field(:color, "phase", type: :nominal)
+```
+
+Notice the **sawtooth pattern**: memory grows as we create data, then drops when GC runs.
+
+## Part 3: The Million Records Problem
+
+Now let's see why this matters in the real world. Imagine you're building an API that needs to return user data. A naive implementation might load everything into memory:
+
+```elixir
+defmodule FakeDatabase do
+  @doc """
+  Simulates loading records from a database.
+  Each "record" is a map with user data (~500 bytes each).
+  """
+  def load_all_users(count) do
+    Enum.map(1..count, fn id ->
+      %{
+        id: id,
+        name: "User #{id}",
+        email: "user#{id}@example.com",
+        department: Enum.random(["Engineering", "Sales", "Marketing", "Finance"]),
+        metadata: %{
+          created_at: DateTime.utc_now(),
+          preferences: %{theme: "dark", notifications: true},
+          tags: ["active", "verified", "premium"]
+        }
+      }
+    end)
+  end
+end
+```
+
+### Loading 10,000 Records
+
+```elixir
+MemoryHelper.measure("Before loading")
+
+users = FakeDatabase.load_all_users(10_000)
+MemoryHelper.measure("After loading 10K users")
+
+# How big is this data?
+IO.puts("Number of users loaded: #{length(users)}")
+:ok
+```
+
+### Loading 100,000 Records
+
+```elixir
+:erlang.garbage_collect()
+MemoryHelper.measure("Baseline (after GC)")
+
+users = FakeDatabase.load_all_users(100_000)
+MemoryHelper.measure("After loading 100K users")
+
+IO.puts("That's a lot of memory for just user records!")
+:ok
+```
+
+### The Danger: Loading 1,000,000 Records
+
+**Warning**: This cell will use significant memory. Run it to see what happens when you naively load a large dataset:
+
+```elixir
+:erlang.garbage_collect()
+baseline = MemoryHelper.memory_kb()
+IO.puts("Baseline: #{baseline} KB")
+
+# This simulates: Repo.all(User) on a table with 1M rows
+IO.puts("\nLoading 1,000,000 records... (this may take a moment)")
+
+users = FakeDatabase.load_all_users(1_000_000)
+
+final = MemoryHelper.memory_kb()
+IO.puts("After loading: #{final} KB")
+IO.puts("Memory increase: #{Float.round(final - baseline, 2)} KB")
+IO.puts("That's approximately #{Float.round((final - baseline) / 1024, 2)} MB!")
+
+# This single process is now holding all that data
+IO.puts("\nImagine 100 users hitting this endpoint simultaneously...")
+:ok
+```
+
+### Visualizing the Problem
+
+```elixir
+alias VegaLite, as: Vl
+
+# Measure memory at different record counts
+record_counts = [1_000, 5_000, 10_000, 25_000, 50_000, 100_000, 250_000, 500_000]
+
+memory_data =
+  Enum.map(record_counts, fn count ->
+    :erlang.garbage_collect()
+
+    _users = FakeDatabase.load_all_users(count)
+    memory = MemoryHelper.memory_kb()
+
+    # Clean up for next iteration
+    :erlang.garbage_collect()
+
+    %{records: count, memory_mb: Float.round(memory / 1024, 2)}
+  end)
+
+Vl.new(width: 600, height: 300, title: "Memory Usage vs Record Count")
+|> Vl.data_from_values(memory_data)
+|> Vl.mark(:bar)
+|> Vl.encode_field(:x, "records", type: :ordinal, title: "Number of Records")
+|> Vl.encode_field(:y, "memory_mb", type: :quantitative, title: "Memory (MB)")
+|> Vl.encode(:color, value: "#e74c3c")
+```
+
+## Part 4: Solutions Preview
+
+So what do we do about this? Here's a preview of techniques you'll learn in later sessions:
+
+### Solution 1: Streaming with `Stream` (Session 3)
+
+Instead of loading everything into memory, process records one at a time.
+
+**The key difference:**
+
+* `Enum.map` builds the **entire list in memory first**, then processes it
+* `Stream.map` processes **one item at a time**, never building the full list
+
+```mermaid
+graph LR
+    subgraph enum["Enum.map (eager) - High Memory"]
+        direction LR
+        e1["1..500K"] --> e2["Build FULL list<br/>[item1, item2, ..., item500K]"] --> e3["Then process<br/>each item"]
+        style e2 fill:#ffcccc,stroke:#cc0000
+    end
+```
+
+```mermaid
+graph LR
+    subgraph stream["Stream.map (lazy) - Low Memory"]
+        direction LR
+        s1["1..500K"] --> s2["Get item 1"] --> s3["Process it"] --> s4["Get item 2"] --> s5["Process it"] --> s6["..."]
+        style s2 fill:#ccffcc,stroke:#00cc00
+        style s4 fill:#ccffcc,stroke:#00cc00
+    end
+```
+
+```elixir
+# To see the difference, we need to HOLD the intermediate result
+# not just process and discard it
+
+defmodule StreamDemo do
+  @doc "Builds entire list in memory, then returns it"
+  def build_with_enum(count) do
+    1..count
+    |> Enum.map(fn i -> %{id: i, data: String.duplicate("x", 100)} end)
+  end
+
+  @doc "Returns a Stream - nothing computed yet!"
+  def build_with_stream(count) do
+    1..count
+    |> Stream.map(fn i -> %{id: i, data: String.duplicate("x", 100)} end)
+  end
+
+  @doc "Processes items one at a time, returns only the count"
+  def process_with_stream(count) do
+    1..count
+    |> Stream.map(fn i -> %{id: i, data: String.duplicate("x", 100)} end)
+    |> Enum.reduce(0, fn _item, acc -> acc + 1 end)
+  end
+end
+```
+
+```elixir
+# DEMO 1: Enum builds everything in memory
+:erlang.garbage_collect()
+baseline = MemoryHelper.memory_kb()
+IO.puts("=== Enum.map (eager) ===")
+IO.puts("Baseline: #{baseline} KB")
+
+# This creates 500K maps in memory AT ONCE
+result = StreamDemo.build_with_enum(500_000)
+
+after_enum = MemoryHelper.memory_kb()
+IO.puts("After Enum.map: #{after_enum} KB")
+
+IO.puts(
+  "Memory used: #{Float.round(after_enum - baseline, 2)} KB (#{Float.round((after_enum - baseline) / 1024, 2)} MB)"
+)
+
+IO.puts("Holding #{length(result)} items in memory\n")
+
+# Clean up
+result = nil
+:erlang.garbage_collect()
+```
+
+```elixir
+# DEMO 2: Stream processes one at a time
+:erlang.garbage_collect()
+baseline = MemoryHelper.memory_kb()
+IO.puts("=== Stream (lazy) ===")
+IO.puts("Baseline: #{baseline} KB")
+
+# This processes 500K items but only holds ONE at a time
+count = StreamDemo.process_with_stream(500_000)
+
+after_stream = MemoryHelper.memory_kb()
+IO.puts("After Stream processing: #{after_stream} KB")
+IO.puts("Memory used: #{Float.round(after_stream - baseline, 2)} KB")
+IO.puts("Processed #{count} items without holding them all in memory!")
+```
+
+The difference should be dramatic: Enum uses ~100+ MB, Stream uses almost nothing!
+
+### Solution 2: Pagination
+
+Instead of loading 1M records, load them in pages:
+
+```elixir
+defmodule PaginationDemo do
+  def load_page(_page, per_page \\ 100) do
+    # In real code: Repo.all(from u in User, limit: ^per_page, offset: ^((page - 1) * per_page))
+    FakeDatabase.load_all_users(per_page)
+  end
+end
+
+# Instead of loading 1M records (would use ~500MB):
+# We load 100 records at a time (uses ~0.5MB)
+
+:erlang.garbage_collect()
+MemoryHelper.measure("Before pagination")
+
+page1 = PaginationDemo.load_page(1, 100)
+MemoryHelper.measure("After loading page 1 (100 records)")
+
+IO.puts("Got #{length(page1)} records with minimal memory!")
+:ok
+```
+
+### Solution 3: DataLoader for GraphQL (Sessions 10 & 12)
+
+When building GraphQL APIs, you often face the **N+1 problem**:
+
+```graphql
+query {
+  users(first: 100) {    # 1 query
+    name
+    posts {              # 100 queries (one per user!)
+      title
+    }
+  }
+}
+```
+
+**DataLoader** solves this by:
+
+1. Collecting all the IDs that need to be fetched
+2. Making a single batched query
+3. Distributing results to the right places
+
+```elixir
+# Preview of DataLoader pattern (you'll implement this in Session 12):
+
+# Instead of:
+# users |> Enum.map(fn user -> Repo.all(from p in Post, where: p.user_id == ^user.id) end)
+# (100 separate queries!)
+
+# DataLoader does:
+# 1. Collects all user_ids: [1, 2, 3, ..., 100]
+# 2. Single query: Repo.all(from p in Post, where: p.user_id in ^user_ids)
+# 3. Groups results by user_id and returns them
+
+IO.puts("""
+DataLoader Benefits:
+- Reduces N+1 queries to 2 queries
+- Automatic batching and caching
+- Integrates seamlessly with Absinthe GraphQL
+- You'll build this in Session 12!
+""")
+
+:ok
+```
+
+## Key Takeaways
+
+```elixir
+IO.puts("""
+╔══════════════════════════════════════════════════════════════════╗
+║                     KEY TAKEAWAYS                                ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  1. BINDING VS ASSIGNMENT                                        ║
+║     • x = 5 binds the name "x" to value 5                        ║
+║     • Rebinding creates NEW values, doesn't modify old ones      ║
+║                                                                  ║
+║  2. GARBAGE COLLECTION                                           ║
+║     • Each process has its own GC (no global pauses!)            ║
+║     • Orphaned data is cleaned up automatically                  ║
+║     • You can manually trigger with :erlang.garbage_collect()    ║
+║                                                                  ║
+║  3. MEMORY AWARENESS                                             ║
+║     • Loading large datasets into memory is dangerous            ║
+║     • Use Stream for lazy processing                             ║
+║     • Use pagination for APIs                                    ║
+║     • Use DataLoader for GraphQL batching                        ║
+║                                                                  ║
+║  4. THE BEAM ADVANTAGE                                           ║
+║     • Per-process heaps = isolated failures                      ║
+║     • One slow GC doesn't affect other processes                 ║
+║     • This is why Elixir handles millions of connections         ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+""")
+```
+
+## What's Next?
+
+In **Session 2: Pattern Matching**, you'll discover that `=` is even more powerful than simple binding - it's a pattern matching operator that can destructure complex data structures!
+
+```elixir
+# Sneak peek:
+{status, %{name: name, age: age}} = {:ok, %{name: "Alice", age: 30, role: "admin"}}
+IO.puts("Status: #{status}, Name: #{name}, Age: #{age}")
+
+# This will fail (pattern doesn't match):
+# {:ok, _} = {:error, "something went wrong"}
+```
+
+---
+
+*This "Beyond" section is optional supplementary material. The core exercises in the main README are sufficient for completing the session.*
