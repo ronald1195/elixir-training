@@ -230,7 +230,7 @@ alias VegaLite, as: Vl
 data_points =
   Enum.reduce(1..10, [{0, MemoryHelper.memory_kb(), "baseline"}], fn i, acc ->
     # Create garbage
-    _garbage = Enum.to_list(1..100_000)
+    _garbage = Enum.to_list(1..50_000)
     before_gc = MemoryHelper.memory_kb()
 
     # Collect garbage
